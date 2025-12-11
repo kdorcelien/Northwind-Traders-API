@@ -5,10 +5,7 @@ import com.pluralsight.NorthwindTradersAPI.model.Products;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,8 +64,72 @@ public class SimpleCategoryDAO implements CategoryDAO{
     @Override
     public Category insert(Category category) {
         this.categories.clear();
-        String query = "INSERT INTO Categories (CategoryName, ";
-        return null;
+        String query = "INSERT INTO Categories (CategoryName) VALUES ( ? )";
+        try {
+            Connection connection = dataSource.getConnection();
+
+            try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                statement.setString(1, category.getCategoryName());
+
+                statement.getGeneratedKeys();
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Category added successfully!");
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error adding category: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return category;
     }
-//    CategoryID, CategoryName, Description
+
+    @Override
+    public void delete(int categoryID) {
+        String query = "DELETE FROM Categories WHERE CategoryID = ?";
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, categoryID);
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Category deleted successfully!");
+                } else {
+                    System.out.println("Category not found.");
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting Category: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(int id, Category category) {
+        String query = "UPDATE Categories SET CategoryName = ? WHERE CategoryID = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, category.getCategoryName());
+                statement.setInt(2, id);
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Category updated successfully!");
+                } else {
+                    System.out.println("Category not found.");
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating Category: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

@@ -44,7 +44,7 @@ public class ProductsController {
 
     @RequestMapping(path="/products/{id}",method=RequestMethod.DELETE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteEmployee (@PathVariable int id) {
+    public void deleteProduct (@PathVariable int id) {
         productsDAO.delete(id);
     }
 }

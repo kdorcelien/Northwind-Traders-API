@@ -9,4 +9,6 @@ public interface CategoryDAO {
     public List<Category> getAll();
     public List<Category> getByCategoryId(int id);
     public Category insert(Category category);
+    public void delete(int categoryID);
+    public void update(int id, Category category);
 }
