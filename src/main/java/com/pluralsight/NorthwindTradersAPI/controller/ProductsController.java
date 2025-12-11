@@ -36,4 +36,15 @@ public class ProductsController {
 
         return productsDAO.insert(products);
     }
+
+    @RequestMapping(path="/products/{id}",method=RequestMethod.PUT)
+    public void updateProduct (@PathVariable int id, @RequestBody Products products) {
+        productsDAO.update(id, products);
+    }
+
+    @RequestMapping(path="/products/{id}",method=RequestMethod.DELETE)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteEmployee (@PathVariable int id) {
+        productsDAO.delete(id);
+    }
 }

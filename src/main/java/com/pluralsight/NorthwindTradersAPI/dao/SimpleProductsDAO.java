@@ -21,12 +21,6 @@ public class SimpleProductsDAO implements ProductsDAO {
 
 
     @Override
-    public void add(Products product) {
-        this.products.add(product);
-
-    }
-
-    @Override
     public List<Products> getAll() {
         this.products.clear();
         String query = "SELECT p.productId, p.ProductName, c.CategoryID, p.UnitPrice FROM Products p JOIN Categories c" +
@@ -78,7 +72,7 @@ public class SimpleProductsDAO implements ProductsDAO {
 
             try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, product.getName());
-                statement.setInt(2,product.getCategory());
+                statement.setInt(2, product.getCategory());
                 statement.setDouble(3, product.getPrice());
 
                 statement.getGeneratedKeys();
@@ -90,47 +84,61 @@ public class SimpleProductsDAO implements ProductsDAO {
                 }
 
             }
-    }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Error adding product: " + e.getMessage());
             e.printStackTrace();
         }
         return product;
     }
 
-    @Override
-    public List<Products> getGetByName(String name) {
-        return List.of();
-    }
-
-    @Override
-    public List<Products> getGetGetByCategory(String category) {
-        return List.of();
-    }
 
     @Override
     public void delete(int productId) {
+        String query = "DELETE FROM Products WHERE ProductID = ?";
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, productId);
 
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Product deleted successfully!");
+                } else {
+                    System.out.println("Product not found.");
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting product: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void update(Products product) {
+    public void update(int id, Products product) {
+        String query = "UPDATE Products SET ProductName = ?, CategoryID = ?, UnitPrice = ? WHERE ProductID = ?";
 
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, product.getName());
+                statement.setInt(2, product.getCategory());
+                statement.setDouble(3, product.getPrice());
+                statement.setInt(4, id);
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Product updated successfully!");
+                } else {
+                    System.out.println("Product not found.");
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating product: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-
-    @Override
-    public List<Products> getByProductId() {
-        return List.of();
-    }
-
-    @Override
-    public List<Products> getGetByName() {
-        return List.of();
-    }
-
-    @Override
-    public List<Products> getGetGetByCategory() {
-        return List.of();
-    }
 }
 
